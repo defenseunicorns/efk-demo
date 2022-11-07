@@ -1,0 +1,38 @@
+kind: ZarfPackageConfig
+metadata:
+  name: efk
+  description: "Basic EFK Stack"
+  # Big Bang / Iron Bank are only amd64
+  architecture: amd64
+
+components:
+  - name: efk
+    required: true
+    images: 
+      - "registry1.dso.mil/ironbank/big-bang/base:2.0.0"
+      - "registry1.dso.mil/ironbank/elastic/kibana/kibana:8.4.3"
+      - "registry1.dso.mil/ironbank/elastic/elasticsearch/elasticsearch:8.4.3"
+      - "registry1.dso.mil/ironbank/elastic/eck-operator/eck-operator:2.4.0"
+      - "registry1.dso.mil/ironbank/opensource/fluent/fluent-bit:1.9.9"
+
+    charts:
+      - name: eck-operator
+        # releaseName: eck-operator
+        url: https://repo1.dso.mil/platform-one/big-bang/apps/core/eck-operator.git
+        version: "2.4.0-bb.0"
+        namespace: efk
+        gitPath: chart
+
+      - name: logging # elasticsearch-kibana
+        # releasename: logging
+        url: https://repo1.dso.mil/platform-one/big-bang/apps/core/elasticsearch-kibana.git
+        version: "0.12.1-bb.0"
+        namespace: efk
+        gitPath: chart
+
+      - name: fluent-bit
+        # releaseName: fluentbit
+        url: https://repo1.dso.mil/platform-one/big-bang/apps/core/fluentbit.git
+        version: "0.20.9-bb.0"
+        namespace: efk
+        gitPath: chart
