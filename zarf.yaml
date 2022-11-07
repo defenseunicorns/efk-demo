@@ -12,7 +12,7 @@ variables:
     prompt: false
 
   - name: BRANCH
-    default: "main"
+    default: "feature/suricata"
     prompt: false
 
 components:
@@ -65,3 +65,12 @@ components:
       - name: big-bang-config
         kustomizations:
           - "kustomizations/bigbang"
+
+  - name: suricata
+    charts:
+      - name: suricata
+        localPath: suricata-charts
+        namespace: "suricata"
+        version: 0.1.0
+    images:
+      - "registry.hub.docker.com/jasonish/suricata:6.0.2"
