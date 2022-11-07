@@ -149,6 +149,18 @@ istio:
           Dfvp7OOGAN6dEOM4+qR9sdjoSYKEBpsr6GtPAQw4dy753ec5
           -----END CERTIFICATE-----
 
+eckoperator:
+  enabled: true
+fluentbit:
+  enabled: true
+jaeger:
+  enabled: false
+loki:
+  enabled: false
+promtail:
+  enabled: false
+tempo:
+  enabled: false
 clusterAuditor:
   enabled: false
 gatekeeper:
@@ -176,15 +188,3 @@ logging:
   #       persistence:
   #         storageClassName: "local-path"
     
-eckoperator:
-  enabled: true
-fluentbit:
-  enabled: true
-jaeger:
-  enabled: false
-loki:
-  enabled: false
-promtail:
-  enabled: false
-tempo:
-  enabled: false
