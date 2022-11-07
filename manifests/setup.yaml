@@ -1,0 +1,11 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: zarf-cd-pkg
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/defenseunicorns/efk-demo.git
+  ref:
+    branch: "###ZARF_VAR_BRANCH###"
