@@ -1,7 +1,7 @@
 kind: ZarfPackageConfig
 metadata:
-  name: dco-foundation
-  description: "Defensive Cyber Ops (DCO) Suite Foundation"
+  name: efk
+  description: "Flux-driven EFK stack with Istio"
   # Big Bang / Iron Bank are only amd64
   architecture: amd64
 
