@@ -99,9 +99,3 @@ components:
     images:
       - "registry.hub.docker.com/jasonish/suricata:6.0.2"
 
-  # - name: metallb-ip
-  #   required: true
-  #   manifests:
-  #     - name: metallb-ip
-  #       files:
-  #         - manifests/metallb-ip.yaml
