@@ -56,7 +56,7 @@ components:
       - "registry1.dso.mil/ironbank/elastic/kibana/kibana:8.4.2"
       - "registry1.dso.mil/ironbank/elastic/elasticsearch/elasticsearch:8.4.2"
       - "registry1.dso.mil/ironbank/elastic/eck-operator/eck-operator:2.4.0"
-      - "registry1.dso.mil/ironbank/opensource/fluent/fluent-bit:1.9.9"
+      - "registry1.dso.mil/ironbank/opensource/fluent/fluent-bit:1.9.8"
 
   - name: big-bang-core-standard
     description: "Deploy Big Bang Core with a standard configuration"
