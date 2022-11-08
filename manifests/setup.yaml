@@ -1,8 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb
+  labels:
+    istio-injection: enabled
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: GitRepository
 metadata:
-  name: zarf-cd-pkg
+  name: efk-demo
   namespace: flux-system
 spec:
   interval: 1m
