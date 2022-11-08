@@ -66,6 +66,19 @@ components:
         kustomizations:
           - "kustomizations/bigbang"
 
+  - name: metallb
+    description: "Load balancer for balancing loads"
+    required: false
+    repos: 
+      - https://github.com/metallb/metallb.git@v0.13.7
+    images:
+      - quay.io/metallb/speaker:v0.13.7
+      - quay.io/metallb/controller:v0.13.7
+    manifests:
+      - name: metallb
+        files:
+          - manifests/metallb.yaml
+
   - name: suricata
     required: true
     charts:
