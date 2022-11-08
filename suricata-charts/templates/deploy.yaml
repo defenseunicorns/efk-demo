@@ -50,4 +50,3 @@ spec:
                 values:
                 - suricata
             topologyKey: "kubernetes.io/hostname"
-
