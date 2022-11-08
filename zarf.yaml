@@ -1,7 +1,7 @@
 kind: ZarfPackageConfig
 metadata:
   name: efk
-  description: "Flux-driven EFK stack with Istio"
+  description: "Flux-driven EFK stack with Istio and Suricata"
   # Big Bang / Iron Bank are only amd64
   architecture: amd64
 
