@@ -12,7 +12,7 @@ variables:
     prompt: false
 
   - name: BRANCH
-    default: "feature/upgrade"
+    default: "main"
     prompt: false
 
 components:
@@ -66,28 +66,40 @@ components:
         kustomizations:
           - "kustomizations/bigbang"
 
-  - name: setup
-    description: "Required setup for the EFK Demo project"
-    required: true
-    repos:
-      - https://github.com/defenseunicorns/efk-demo.git
-    manifests:
-      - name: setup
-        files:
-          - manifests/setup.yaml
+  # - name: setup
+  #   description: "Required setup for the EFK Demo project"
+  #   required: true
+  #   repos:
+  #     - https://github.com/defenseunicorns/efk-demo.git
+  #   manifests:
+  #     - name: setup
+  #       files:
+  #         - manifests/setup.yaml
 
-  - name: metallb
-    description: "Load balancer for balancing loads"
+  # - name: metallb
+  #   description: "Load balancer for balancing loads"
+  #   required: true
+  #   repos: 
+  #     - https://github.com/metallb/metallb.git@v0.13.7
+  #   images:
+  #     - quay.io/metallb/speaker:v0.13.7
+  #     - quay.io/metallb/controller:v0.13.7
+  #   manifests:
+  #     - name: metallb
+  #       files:
+  #         - manifests/metallb.yaml
+
+  - name: metallab
     required: true
-    repos: 
-      - https://github.com/metallb/metallb.git@v0.13.7
+    charts:
+      - name: metallb
+        url: https://metallb.github.io/metallb
+        namespace: "metallb"
+        version: v0.13.7
     images:
       - quay.io/metallb/speaker:v0.13.7
       - quay.io/metallb/controller:v0.13.7
-    manifests:
-      - name: metallb
-        files:
-          - manifests/metallb.yaml
+      
 
   - name: suricata
     required: true
