@@ -153,6 +153,129 @@ eckoperator:
   enabled: true
 fluentbit:
   enabled: true
+  values:
+    daemonSetVolumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: suricatalogs
+        hostPath:
+          path: /data/suricata
+      - name: etcmachineid
+        hostPath:
+          path: /etc/machine-id
+          type: File
+    daemonSetVolumeMounts:
+      - name: varlog
+        mountPath: /var/log
+        readOnly: true
+      - name: varlibdockercontainers
+        mountPath: /var/lib/docker/containers
+        readOnly: true
+      - name: suricatalogs
+        mountPath: /data/suricata
+        readOnly: true
+      - name: etcmachineid
+        mountPath: /etc/machine-id
+        readOnly: true
+    config:
+      inputs: |
+        [INPUT]
+            Name    tail
+            Path /data/suricata/eve.json
+            Tag kube.*
+            Parser  suricata-json
+            Mem_Buf_Limit 5MB
+
+        [INPUT]
+            Name tail
+            Path /var/log/containers/*.log
+            # -- Excluding fluentbit logs from sending to ECK, along with gatekeeper-audit logs which are shipped by clusterAuditor.
+            Exclude_Path /var/log/containers/*fluent*.log
+            Parser containerd
+            Tag kube.*
+            Mem_Buf_Limit 50MB
+            Skip_Long_Lines On
+            storage.type filesystem
+
+        [INPUT]
+            Name systemd
+            Tag host.*
+            Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+            Read_From_Tail On
+            storage.type filesystem
+
+      customParsers: |
+        [PARSER]
+            Name suricata-json
+            Format json
+            Time_Key timestamp
+            Time_Format %Y-%m-%dT%H:%M:%S.%6N%z
+
+        [PARSER]
+            Name docker_no_time
+            Format json
+            Time_Keep Off
+            Time_Key time
+            Time_Format %Y-%m-%dT%H:%M:%S.%L
+
+        [PARSER]
+            Name containerd
+            Format regex
+            Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
+            Time_Key time
+            Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+            Time_Keep On
+
+        [PARSER]
+            Name   apache
+            Format regex
+            Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+            Time_Key time
+            Time_Format %d/%b/%Y:%H:%M:%S %z
+
+        [PARSER]
+            Name   apache2
+            Format regex
+            Regex  ^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+            Time_Key time
+            Time_Format %d/%b/%Y:%H:%M:%S %z
+
+        [PARSER]
+            Name   apache_error
+            Format regex
+            Regex  ^\[[^ ]* (?<time>[^\]]*)\] \[(?<level>[^\]]*)\](?: \[pid (?<pid>[^\]]*)\])?( \[client (?<client>[^\]]*)\])? (?<message>.*)$
+
+        [PARSER]
+            Name   nginx
+            Format regex
+            Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+            Time_Key time
+            Time_Format %d/%b/%Y:%H:%M:%S %z
+
+        [PARSER]
+            Name   json
+            Format json
+            Time_Key time
+            Time_Format %d/%b/%Y:%H:%M:%S %z
+
+        [PARSER]
+            Name        docker
+            Format      json
+            Time_Key    time
+            Time_Format %Y-%m-%dT%H:%M:%S.%L
+            Time_Keep   On
+
+        [PARSER]
+            Name        syslog
+            Format      regex
+            Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
+            Time_Key    time
+            Time_Format %b %d %H:%M:%S
+
 jaeger:
   enabled: false
 loki:
@@ -173,18 +296,17 @@ monitoring:
 # EFK -> PLG, see https://repo1.dso.mil/platform-one/big-bang/bigbang/-/blob/1.39.0/docs/guides/using-bigbang/efk-plg-logging-migration.md
 logging:
   enabled: true
-  # values:
-  #   elasticsearch:
-  #     master:
-  #       persistence:
-  #         storageClassName: "local-path"
-  #     data:
-  #       persistence:
-  #         storageClassName: "local-path"
-  #     ingest:
-  #       persistence:
-  #         storageClassName: "local-path"
-  #     ml:
-  #       persistence:
-  #         storageClassName: "local-path"
-    
+  values:
+    elasticsearch:
+      master:
+        persistence:
+          storageClassName: "local-path"
+      data:
+        persistence:
+          storageClassName: "local-path"
+      ingest:
+        persistence:
+          storageClassName: "local-path"
+      ml:
+        persistence:
+          storageClassName: "local-path"

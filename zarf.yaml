@@ -67,6 +67,7 @@ components:
           - "kustomizations/bigbang"
 
   - name: suricata
+    required: true
     charts:
       - name: suricata
         localPath: suricata-charts
