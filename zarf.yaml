@@ -12,7 +12,7 @@ variables:
     prompt: false
 
   - name: BRANCH
-    default: "feature/upgrade"
+    default: "main"
     prompt: false
 
 components:
