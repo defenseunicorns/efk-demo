@@ -66,9 +66,19 @@ components:
         kustomizations:
           - "kustomizations/bigbang"
 
+  - name: setup
+    description: "Required setup for the EFK Demo project"
+    required: true
+    repos:
+      - https://github.com/defenseunicorns/efk-demo.git
+    manifests:
+      - name: setup
+        files:
+          - manifests/setup.yaml
+
   - name: metallb
     description: "Load balancer for balancing loads"
-    required: false
+    required: true
     repos: 
       - https://github.com/metallb/metallb.git@v0.13.7
     images:
