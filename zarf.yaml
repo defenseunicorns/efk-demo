@@ -1,7 +1,7 @@
 kind: ZarfPackageConfig
 metadata:
   name: efk
-  description: "Flux-driven EFK stack with Istio"
+  description: "Flux-driven EFK stack with Istio and Suricata"
   # Big Bang / Iron Bank are only amd64
   architecture: amd64
 
@@ -22,41 +22,41 @@ components:
       - name: flux-installer
         # This will be built on the package create side and deployed as a regular manifest on package deploy
         kustomizations:
-          - https://repo1.dso.mil/platform-one/big-bang/bigbang.git//base/flux?ref=1.39.0
+          - https://repo1.dso.mil/platform-one/big-bang/bigbang.git//base/flux?ref=1.44.0
     images:
       # Flux images
-      - registry1.dso.mil/ironbank/fluxcd/helm-controller:v0.22.1
-      - registry1.dso.mil/ironbank/fluxcd/kustomize-controller:v0.26.1
-      - registry1.dso.mil/ironbank/fluxcd/notification-controller:v0.24.0
-      - registry1.dso.mil/ironbank/fluxcd/source-controller:v0.25.8
+      - registry1.dso.mil/ironbank/fluxcd/helm-controller:v0.24.0
+      - registry1.dso.mil/ironbank/fluxcd/kustomize-controller:v0.28.0
+      - registry1.dso.mil/ironbank/fluxcd/notification-controller:v0.26.0
+      - registry1.dso.mil/ironbank/fluxcd/source-controller:v0.29.0
 
   - name: big-bang-core-standard-assets
     description: "Git repositories and OCI images used by Big Bang Core"
     required: true
     repos:
-      - https://repo1.dso.mil/platform-one/big-bang/bigbang.git@1.39.0
-      - https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-controlplane.git@1.13.5-bb.2
-      - https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-operator.git@1.13.5-bb.1
-      - https://repo1.dso.mil/platform-one/big-bang/apps/core/elasticsearch-kibana.git@0.8.0-bb.1
-      - https://repo1.dso.mil/platform-one/big-bang/apps/core/eck-operator.git@2.3.0-bb.0
-      - https://repo1.dso.mil/platform-one/big-bang/apps/core/fluentbit.git@0.20.3-bb.0
+      - https://repo1.dso.mil/platform-one/big-bang/bigbang.git@1.44.0
+      - https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-controlplane.git@1.15.0-bb.0
+      - https://repo1.dso.mil/platform-one/big-bang/apps/core/istio-operator.git@1.15.0-bb.0
+      - https://repo1.dso.mil/platform-one/big-bang/apps/core/elasticsearch-kibana.git@0.11.0-bb.0
+      - https://repo1.dso.mil/platform-one/big-bang/apps/core/eck-operator.git@2.4.0-bb.0
+      - https://repo1.dso.mil/platform-one/big-bang/apps/core/fluentbit.git@0.20.8-bb.0
 
     images:
       # istio:
       - "registry1.dso.mil/ironbank/big-bang/base:2.0.0"
-      - "registry1.dso.mil/ironbank/opensource/istio/pilot:1.13.5"
-      - "registry1.dso.mil/ironbank/opensource/istio/proxyv2:1.13.5"
-      - "registry1.dso.mil/ironbank/opensource/istio/install-cni:1.13.5"
+      - "registry1.dso.mil/ironbank/opensource/istio/pilot:1.15.0"
+      - "registry1.dso.mil/ironbank/opensource/istio/proxyv2:1.15.0"
+      - "registry1.dso.mil/ironbank/opensource/istio/install-cni:1.15.0"
 
       # istiooperator:
-      - "registry1.dso.mil/ironbank/opensource/istio/operator:1.13.5"
+      - "registry1.dso.mil/ironbank/opensource/istio/operator:1.15.0"
 
       # logging
       - "registry1.dso.mil/ironbank/big-bang/base:2.0.0"
-      - "registry1.dso.mil/ironbank/elastic/kibana/kibana:8.2.3"
-      - "registry1.dso.mil/ironbank/elastic/elasticsearch/elasticsearch:8.2.3"
-      - "registry1.dso.mil/ironbank/elastic/eck-operator/eck-operator:2.3.0"
-      - "registry1.dso.mil/ironbank/opensource/fluent/fluent-bit:1.9.6"
+      - "registry1.dso.mil/ironbank/elastic/kibana/kibana:8.4.2"
+      - "registry1.dso.mil/ironbank/elastic/elasticsearch/elasticsearch:8.4.2"
+      - "registry1.dso.mil/ironbank/elastic/eck-operator/eck-operator:2.4.0"
+      - "registry1.dso.mil/ironbank/opensource/fluent/fluent-bit:1.9.8"
 
   - name: big-bang-core-standard
     description: "Deploy Big Bang Core with a standard configuration"
@@ -65,3 +65,37 @@ components:
       - name: big-bang-config
         kustomizations:
           - "kustomizations/bigbang"
+
+  - name: setup
+    description: "Required setup for the EFK Demo project"
+    required: true
+    repos:
+      - https://github.com/defenseunicorns/efk-demo.git
+    manifests:
+      - name: setup
+        files:
+          - manifests/setup.yaml
+
+  - name: metallb
+    description: "Load balancer for balancing loads"
+    required: true
+    repos: 
+      - https://github.com/metallb/metallb.git@v0.13.7
+    images:
+      - quay.io/metallb/speaker:v0.13.7
+      - quay.io/metallb/controller:v0.13.7
+    manifests:
+      - name: metallb
+        files:
+          - manifests/metallb.yaml
+
+  - name: suricata
+    required: true
+    charts:
+      - name: suricata
+        localPath: suricata-charts
+        namespace: "suricata"
+        version: 0.1.0
+    images:
+      - "registry.hub.docker.com/jasonish/suricata:6.0.2"
+
