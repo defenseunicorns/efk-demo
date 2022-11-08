@@ -28,7 +28,7 @@ components:
       - registry1.dso.mil/ironbank/fluxcd/helm-controller:v0.24.0
       - registry1.dso.mil/ironbank/fluxcd/kustomize-controller:v0.28.0
       - registry1.dso.mil/ironbank/fluxcd/notification-controller:v0.28.0
-      - registry1.dso.mil/ironbank/fluxcd/source-controller:v0.29.8
+      - registry1.dso.mil/ironbank/fluxcd/source-controller:v0.29.0
 
   - name: big-bang-core-standard-assets
     description: "Git repositories and OCI images used by Big Bang Core"
